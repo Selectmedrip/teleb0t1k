@@ -25,7 +25,7 @@ namespace TelegramBotWinForms.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("6433582790:AAH9PaEHZ4zZ5_vpo5W0R1p3MWRds1Uyy-k")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string BotApiKey {
             get {
                 return ((string)(this["BotApiKey"]));
