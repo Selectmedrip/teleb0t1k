@@ -43,75 +43,50 @@ namespace TelegramBotWinForms
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
+
+        private static bool isRunning = true;
+
         private async void BotClient_OnMessage(object sender, MessageEventArgs e)
         {
             string text = e.Message.Text;
             //Если текстовое сообщение
             if (e.Message.Type == Telegram.Bot.Types.Enums.MessageType.Text)
             {
-                //Добавляем сообщение в таблицу
-                dataGridView_MessageList.Invoke((MethodInvoker)delegate
+                string outText;
+
+                //Проверяем, является ли сообщение командой /stop
+                if (text == "/stop")
                 {
-                    dataGridView_MessageList.Rows.Add(e.Message.Date,
-                        "In",
-                        e.Message.Chat.Id.ToString(),
-                        e.Message.Chat.FirstName,
-                        e.Message.Chat.LastName,
-                        e.Message.Chat.Username,
-                        e.Message.Text);
+                    //Если да, то останавливаем бота
+                    isRunning = false;
+                    outText = "Бот остановлен";
+                }
+                else if (text == "/start")
+                {
+                    //Если да, то запускаем бота
+                    isRunning = true;
+                    outText = "Добро пожаловать! Давайте начнём";
+                }
+                else if (text == "/help")
+                {
+                    outText = "Обращайтесь к видеоинструкии: <b>Фёдорова Алексея</b> \n https://www.youtube.com/playlist?list=PLBxD0UwW2SxmiogBXtVv5kItQXXQaPPKh";
+                }
+                else
+                {
+                    //Если бот остановлен, то не обрабатываем другие сообщения
+                    if (!isRunning)
+                        return;
 
-                });
+                    //Обрабатываем другие сообщения
+                    outText = $"Имя: {e.Message.Chat.FirstName} \n <b>Сообщение:</b> {e.Message.Text}";
+                }
 
-
-
-                string outText = $"Contact name: {e.Message.Chat.FirstName} \n <b>Message:</b> {e.Message.Text}";
                 //Отправляем ответ
                 await botClient.SendTextMessageAsync(e.Message.Chat.Id, outText, parseMode: Telegram.Bot.Types.Enums.ParseMode.Html);
-
-                //Добавляем сообщение ответа в таблицу
-                dataGridView_MessageList.Invoke((MethodInvoker)delegate
-                {
-                    dataGridView_MessageList.Rows.Add(e.Message.Date,
-                        "Out",
-                        e.Message.Chat.Id.ToString(),
-                        lbl_BotName.Text,
-                        "",
-                        "",
-                        outText);
-                });
-
-                //Сохраняем сообщения в БД в истории
-                using(AppDbContext db = new AppDbContext())
-                {
-                    //Входящее сообщение 
-                    History history = new History
-                    {
-                        DateMsg = e.Message.Date.ToString(),
-                        TypeMsg = "In",
-                        FirstName = e.Message.Chat.FirstName,
-                        ChatId = e.Message.Chat.Id.ToString(),
-                        LastName = e.Message.Chat.LastName,
-                        UserName = e.Message.Chat.Username,
-                        TextMsg = e.Message.Text
-                    };
-                    db.Histories.Add(history);
-
-                    //Исходящее сообщение
-                    History history2 = new History
-                    {
-                        DateMsg = e.Message.Date.ToString(),
-                        TypeMsg = "Out",
-                        FirstName = lbl_BotName.Text,
-                        ChatId = e.Message.Chat.Id.ToString(),
-                        LastName = "",
-                        UserName = "",
-                        TextMsg = outText
-                    };
-                    db.Histories.Add(history2);
-                    db.SaveChanges();
-                }
             }
         }
+
+
 
         /// <summary>
         /// Сохранение / изменение настроек
