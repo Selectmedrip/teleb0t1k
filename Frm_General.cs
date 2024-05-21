@@ -66,9 +66,24 @@ namespace TelegramBotWinForms
                 {
                     //Если да, то запускаем бота
                     isRunning = true;
-                    outText = "Добро пожаловать! Давайте начнём";
+                    
                     //Отправляем стикер
                     await botClient.SendStickerAsync(e.Message.Chat.Id, "CAACAgIAAxkBAVkBDGZMXyNIvYrufyX2KcqtIEfYs9aXAAKkFAACh_kxSPWBfmLe4SHzNQQ");
+
+                    var inlineKeyboard = new InlineKeyboardMarkup(new[]
+                    {
+                        new [] // первый ряд кнопок
+                        {
+                            InlineKeyboardButton.WithUrl("Микстейпы", "https://t.me/teleb0t1k_bot/mix_collection"),
+                            InlineKeyboardButton.WithCallbackData("Подру-учный")
+                        }
+                    });
+                    await botClient.SendTextMessageAsync(
+                        chatId: e.Message.Chat.Id,
+                        text: "Добро пожаловать! Давайте же начнём \nВыберите действие:",
+                        replyMarkup: inlineKeyboard
+                    );
+                    outText = "Подручный нужен, если не охотно посмотреть на красивый сайт с кнопочками";
                 }
                 else if (text == "/help")
                 {
@@ -78,19 +93,19 @@ namespace TelegramBotWinForms
 
                 else if (text == "Микстейп 1")
                 {
-                    outText = "Ваша ссылка на Микстейп 1: https://selectmedrip.github.io/mix1/";
+                    outText = "Ваша ссылка на Микстейп 1: https://t.me/teleb0t1k_bot/mix1";
                 }
                 else if (text == "Микстейп 2")
                 {
-                    outText = "Ваша ссылка на Микстейп 2: https://selectmedrip.github.io/mix2/";
+                    outText = "Ваша ссылка на Микстейп 2: https://t.me/teleb0t1k_bot/mix2";
                 }
                 else if (text == "Микстейп 3")
                 {
-                    outText = "Ваша ссылка на Микстейп 3: https://selectmedrip.github.io/mix3/";
+                    outText = "Ваша ссылка на Микстейп 3: https://t.me/teleb0t1k_bot/mix3";
                 }
                 else if (text == "Микстейп 4")
                 {
-                    outText = "Ваша ссылка на Микстейп 4: https://selectmedrip.github.io/mix4/";
+                    outText = "Ваша ссылка на Микстейп 4: https://t.me/teleb0t1k_bot/mix4";
                 }
 
                 else
@@ -107,28 +122,6 @@ namespace TelegramBotWinForms
                 //Отправляем ответ
                 await botClient.SendTextMessageAsync(e.Message.Chat.Id, outText, parseMode: Telegram.Bot.Types.Enums.ParseMode.Html);
             }
-                var keyboard = new ReplyKeyboardMarkup(new[]
-                {
-                    new[] // первый ряд кнопок
-                    {
-                        new KeyboardButton("Микстейп 1"),
-                        new KeyboardButton("Микстейп 2")
-                    },
-                    new[] // второй ряд кнопок
-                    {
-                        new KeyboardButton("Микстейп 3"),
-                        new KeyboardButton("Микстейп 4")
-                    }
-                })
-                {
-                    ResizeKeyboard = true // делаем клавиатуру адаптивной
-                };
-
-                await botClient.SendTextMessageAsync(
-                    chatId: e.Message.Chat.Id,
-                    text: "Выберите микстейп",
-                    replyMarkup: keyboard
-                );
 
 
         }
@@ -174,6 +167,7 @@ namespace TelegramBotWinForms
         /// </summary>
         private void InitBot()
         {
+
             if (botClient != null)
                 botClient.StopReceiving();
 
@@ -194,6 +188,39 @@ namespace TelegramBotWinForms
             catch (Exception)
             {
                 MessageBox.Show("Ошибка при инициализации бота. Необходимо проверить настройки или подключение к интернету");
+            }
+            botClient.OnCallbackQuery += BotOnCallbackQueryReceived;
+        }
+
+        private async void BotOnCallbackQueryReceived(object sender, CallbackQueryEventArgs callbackQueryEventArgs)
+        {
+            var callbackQuery = callbackQueryEventArgs.CallbackQuery;
+
+            if (callbackQuery.Data == "Подру-учный")
+            {
+                var keyboard = new ReplyKeyboardMarkup(new[]
+                {
+                    new[] // первый ряд кнопок
+                    {
+                        new KeyboardButton("Микстейп 1"),
+                        new KeyboardButton("Микстейп 2")
+                    },
+                    new[] // второй ряд кнопок
+                    {
+                        new KeyboardButton("Микстейп 3"),
+                        new KeyboardButton("Микстейп 4")
+                    }
+                })
+
+                {
+                    ResizeKeyboard = true // делаем клавиатуру адаптивной
+                };
+
+                await botClient.SendTextMessageAsync(
+                    chatId: callbackQuery.Message.Chat.Id,
+                    text: "Выберите микстейп",
+                    replyMarkup: keyboard
+                );
             }
         }
 
