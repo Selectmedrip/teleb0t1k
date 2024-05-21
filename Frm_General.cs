@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using Telegram.Bot;
 using Telegram.Bot.Args;
 using Telegram.Bot.Exceptions;
+using Telegram.Bot.Types.ReplyMarkups;
 using TelegramBotWinForms.Models;
 
 namespace TelegramBotWinForms
@@ -66,11 +67,32 @@ namespace TelegramBotWinForms
                     //Если да, то запускаем бота
                     isRunning = true;
                     outText = "Добро пожаловать! Давайте начнём";
+                    //Отправляем стикер
+                    await botClient.SendStickerAsync(e.Message.Chat.Id, "CAACAgIAAxkBAVkBDGZMXyNIvYrufyX2KcqtIEfYs9aXAAKkFAACh_kxSPWBfmLe4SHzNQQ");
                 }
                 else if (text == "/help")
                 {
                     outText = "Обращайтесь к видеоинструкии: <b>Фёдорова Алексея</b> \n https://www.youtube.com/playlist?list=PLBxD0UwW2SxmiogBXtVv5kItQXXQaPPKh";
+                    await botClient.SendStickerAsync(e.Message.Chat.Id, "CAACAgIAAxkBAVkEEWZMY0rtbiBDF9S8jne7jr_2lYuWAALJFQACs4IwS-TSpNEFq-VhNQQ");
                 }
+
+                else if (text == "Микстейп 1")
+                {
+                    outText = "Ваша ссылка на Микстейп 1: https://selectmedrip.github.io/mix1/";
+                }
+                else if (text == "Микстейп 2")
+                {
+                    outText = "Ваша ссылка на Микстейп 2: https://selectmedrip.github.io/mix2/";
+                }
+                else if (text == "Микстейп 3")
+                {
+                    outText = "Ваша ссылка на Микстейп 3: https://selectmedrip.github.io/mix3/";
+                }
+                else if (text == "Микстейп 4")
+                {
+                    outText = "Ваша ссылка на Микстейп 4: https://selectmedrip.github.io/mix4/";
+                }
+
                 else
                 {
                     //Если бот остановлен, то не обрабатываем другие сообщения
@@ -79,12 +101,38 @@ namespace TelegramBotWinForms
 
                     //Обрабатываем другие сообщения
                     outText = $"Имя: {e.Message.Chat.FirstName} \n <b>Сообщение:</b> {e.Message.Text}";
+                    await botClient.SendStickerAsync(e.Message.Chat.Id, "CAACAgIAAxkBAVkEXmZMY_kIj8SD_1pzAdA_WhCKsFHFAAKGGgACSFExSxSikK5OEuI_NQQ");
                 }
 
                 //Отправляем ответ
                 await botClient.SendTextMessageAsync(e.Message.Chat.Id, outText, parseMode: Telegram.Bot.Types.Enums.ParseMode.Html);
             }
+                var keyboard = new ReplyKeyboardMarkup(new[]
+                {
+                    new[] // первый ряд кнопок
+                    {
+                        new KeyboardButton("Микстейп 1"),
+                        new KeyboardButton("Микстейп 2")
+                    },
+                    new[] // второй ряд кнопок
+                    {
+                        new KeyboardButton("Микстейп 3"),
+                        new KeyboardButton("Микстейп 4")
+                    }
+                })
+                {
+                    ResizeKeyboard = true // делаем клавиатуру адаптивной
+                };
+
+                await botClient.SendTextMessageAsync(
+                    chatId: e.Message.Chat.Id,
+                    text: "Выберите микстейп",
+                    replyMarkup: keyboard
+                );
+
+
         }
+
 
 
 
